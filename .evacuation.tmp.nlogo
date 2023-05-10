@@ -69,6 +69,7 @@ end
 
 to go
   ; A vous de jouer !
+  if not any? individus with [alive?] [stop]
   ask individus
     [
       if alive?
@@ -134,7 +135,7 @@ to move
     ]
     [
 
-      let insight_green patches with [pcolor = green_]
+      let insight_green patches in-radius 20 with [pcolor = green_]
       ifelse  any? insight_green
       [ set heading towards min-one-of insight_green [distance myself] ]
       [
@@ -147,11 +148,11 @@ to move
         ]
       ]
     ]
-    if [pcolor] of patch-right-of mysel = white
-    [ set heading towards patch-at pxcor (pycor + 1)]
+    if [pcolor] of patch-at 1 0 = white
+    [ set heading towards patch-at 0 1]
 
-    if [pcolor] of patch-at pxcor (pycor + 1) = white
-    [ set heading towards patch-at (pxcor + 1) pycor]
+    if [pcolor] of patch-at 0 1 = white
+    [ set heading towards patch-at 1 0]
   ]
 
   ifelse not any? individus-on patch-ahead 1
@@ -197,7 +198,7 @@ nb-individus
 nb-individus
 0
 500
-92.0
+500.0
 1
 1
 NIL
@@ -290,7 +291,7 @@ fire-spread
 fire-spread
 1
 100
-100.0
+50.0
 1
 1
 NIL

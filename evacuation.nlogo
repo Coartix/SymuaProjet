@@ -69,6 +69,7 @@ end
 
 to go
   ; A vous de jouer !
+  if not any? individus with [alive?] [stop]
   ask individus
     [
       if alive?
@@ -134,7 +135,7 @@ to move
     ]
     [
 
-      let insight_green patches with [pcolor = green_]
+      let insight_green patches in-radius 20 with [pcolor = green_]
       ifelse  any? insight_green
       [ set heading towards min-one-of insight_green [distance myself] ]
       [
@@ -197,7 +198,7 @@ nb-individus
 nb-individus
 0
 500
-306.0
+51.0
 1
 1
 NIL
@@ -265,7 +266,7 @@ Human-speed
 Human-speed
 0
 10
-7.0
+10.0
 1
 1
 NIL
@@ -290,7 +291,7 @@ fire-spread
 fire-spread
 1
 100
-100.0
+50.0
 1
 1
 NIL
