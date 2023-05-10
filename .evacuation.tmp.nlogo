@@ -147,11 +147,11 @@ to move
         ]
       ]
     ]
-    if [pcolor] of patch-at 1 0 = white
-    [ set heading towards patch-at 0 1]
+    if [pcolor] of patch-right-of mysel = white
+    [ set heading towards patch-at pxcor (pycor + 1)]
 
-    if [pcolor] of patch-at 0 1 = white
-    [ set heading towards patch-at 1 0]
+    if [pcolor] of patch-at pxcor (pycor + 1) = white
+    [ set heading towards patch-at (pxcor + 1) pycor]
   ]
 
   ifelse not any? individus-on patch-ahead 1
@@ -197,7 +197,7 @@ nb-individus
 nb-individus
 0
 500
-306.0
+92.0
 1
 1
 NIL
@@ -265,7 +265,7 @@ Human-speed
 Human-speed
 0
 10
-7.0
+10.0
 1
 1
 NIL
