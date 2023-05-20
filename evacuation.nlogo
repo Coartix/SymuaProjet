@@ -7,7 +7,6 @@ globals
   escaped
   escaped-slow
   escaped-fast
-  danger-spread
 ]
 individus-own
 [
@@ -26,7 +25,6 @@ patches-own [
 ]
 
 to init-simulation
-  set danger-spread 50
   set escaped 0
   __clear-all-and-reset-ticks
   initialisation-patches
@@ -62,7 +60,7 @@ to init-simulation
 end
 
 to initialisation-patches
-  import-pcolors "images/Ranged-Exit.png"
+  import-pcolors word word "images/" map-selection ".png"
   set green_ [pcolor] of patch 40 40
   ask patches [
     ifelse pcolor = white
@@ -98,6 +96,7 @@ to go
 end
 
 to spread
+  let danger-spread 50
   if time-alive <= danger-spread
   [
     set time-alive time-alive + 1
@@ -227,7 +226,7 @@ nb-individus
 nb-individus
 0
 1000
-350.0
+497.0
 1
 1
 NIL
@@ -349,7 +348,7 @@ CHOOSER
 Strategy
 Strategy
 "Polite" "Individualist" "Normal"
-1
+0
 
 TEXTBOX
 870
@@ -381,6 +380,17 @@ PENS
 "escaped fast" 1.0 0 -13210332 true "" "plot escaped-fast"
 "dead slow" 1.0 0 -1604481 true "" "plot count individus with [not alive? and (speed < (Human-speed / 500))]"
 "dead fast" 1.0 0 -8053223 true "" "plot count individus with [not alive? and (speed > (Human-speed / 500))]"
+
+INPUTBOX
+561
+602
+806
+662
+map-selection
+hard
+1
+0
+String
 
 @#$#@#$#@
 ## WHAT IS IT?
