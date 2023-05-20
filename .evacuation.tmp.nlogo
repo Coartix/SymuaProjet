@@ -5,6 +5,8 @@ globals
 [
   green_
   escaped
+  escaped-slow
+  escaped-fast
 ]
 individus-own
 [
@@ -28,29 +30,36 @@ to init-simulation
   initialisation-patches
   create-individus nb-individus
   [
-    set shape "person"
     move-to one-of patches with [accessible?]
-    set color green
+    set color orange
     set alive? true
-    set speed (random Human-speed / 500)+ Human-speed / 1000
+    set speed (random Human-speed / 500) + Human-speed / 1000
+
+        ifelse speed > Human-speed / 500
+    [
+      set shape "person"
+    ]
+    [
+     set shape "ghost"
+    ]
   ]
   ask individus [
-    setxy (random max-pxcor) - max-pxcor / 2 (random max-pycor) - max-pycor / 2
+    setxy (random max-pxcor) * 2 - max-pxcor (random max-pycor) * 2 - max-pycor
     if [pcolor] of patch-here = white [die]
   ]
 
   create-fires 1
   [
     setxy -20 -20
-    set color red
+    set color blue
     set shape "square"
     set time-alive 0
-    set pcolor red
+    set pcolor blue
   ]
 end
 
 to initialisation-patches
-  import-pcolors "images/parkour.png"
+  import-pcolors "images/city.png"
   set green_ [pcolor] of patch 40 40
   ask patches [
     ifelse pcolor = white
@@ -86,24 +95,24 @@ to go
 end
 
 to spread
-  if time-alive <= fire-spread
+  if time-alive <= danger-spread
   [
     set time-alive time-alive + 1
-    if time-alive = fire-spread
+    if time-alive = danger-spread
     [
       let proba random 100
       ifelse proba < 75
       [
-        ask neighbors4 with [pcolor != red and pcolor != white and pcolor != green_] [
+        ask neighbors4 with [pcolor != blue and pcolor != white and pcolor != green_] [
           if fires-here != nobody
           [
             sprout-fires 1
             [
-              set color red
+              set color blue
               set shape "square"
               set time-alive 0
             ]
-            set pcolor red
+            set pcolor blue
           ]
         ]
       ]
@@ -118,30 +127,39 @@ end
 
 to move
   rt random 360
-  if pcolor = red [ become-dead ]
+  if pcolor = blue [ become-dead ]
 
   if pcolor = green_
-  [ set escaped escaped + 1
+  [
+    set escaped escaped + 1
+    ifelse speed > Human-speed / 500 [ set escaped-fast escaped-fast + 1 ]
+    [ set escaped-slow escaped-slow + 1 ]
     die
   ]
 
   if alive?
   [
-
-    let insight_red patches in-radius 10 with [pcolor = red]
+    let rsight Individus-sight / 2
+    let insight_red patches in-radius rsight with [pcolor = blue]
     ifelse any? insight_red
-    [ set heading towards max-one-of insight_red [distance myself]
+    [
+      set heading towards max-one-of insight_red [distance myself]
+      set color red
       rt 180
     ]
     [
 
-      let insight_green patches in-radius 20 with [pcolor = green_]
+      let insight_green patches in-radius Individus-sight with [pcolor = green_]
       ifelse  any? insight_green
-      [ set heading towards min-one-of insight_green [distance myself] ]
       [
-        let near (other individus) in-radius 20 with [alive?]
+        set heading towards min-one-of insight_green [distance myself]
+        set color green
+      ]
+      [
+        let near (other individus) in-radius Individus-sight with [alive?]
         if  any? near and not any? insight_red and not any? insight_green
         [
+
           let neighbor-headings [heading] of near
           let average-heading mean neighbor-headings
           set heading average-heading
@@ -155,9 +173,17 @@ to move
     [ set heading towards patch-at 1 0]
   ]
 
-  ifelse not any? individus-on patch-ahead 1
+  let ahead individus-on patch-ahead 1
+  ifelse not any? ahead
   [ fd speed ]
-  [ fd speed / 3]
+  [
+    if Strategy = "Normal" [fd speed / Congestion]
+    if Strategy = "Polite" [fd [speed] of min-one-of individus-here [speed]]
+    if Strategy = "Individualist" [
+      if max-one-of individus-here [speed] = self[ fd speed ]
+    ]
+
+  ]
 
 
 end
@@ -239,10 +265,10 @@ NIL
 1
 
 PLOT
-924
-57
-1437
-536
+840
+10
+1450
+335
 Evolution de l'epidemie
 NIL
 NIL
@@ -287,8 +313,8 @@ SLIDER
 194
 195
 227
-fire-spread
-fire-spread
+danger-spread
+danger-spread
 1
 100
 50.0
@@ -296,6 +322,77 @@ fire-spread
 1
 NIL
 HORIZONTAL
+
+SLIDER
+21
+310
+193
+343
+Individus-sight
+Individus-sight
+1
+30
+20.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+21
+359
+193
+392
+Congestion
+Congestion
+1
+10
+3.0
+1
+1
+NIL
+HORIZONTAL
+
+CHOOSER
+30
+446
+168
+491
+Strategy
+Strategy
+"Polite" "Individualist" "Normal"
+2
+
+TEXTBOX
+870
+389
+1020
+407
+NIL
+10
+0.0
+1
+
+PLOT
+841
+336
+1451
+627
+survie en fonction de la vitesse
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"escaped slow" 1.0 0 -8330359 true "" "plot escaped-slow"
+"escaped fast" 1.0 0 -13210332 true "" "plot escaped-fast"
+"dead slow" 1.0 0 -1604481 true "" "plot count individus with [not alive? and (speed < (Human-speed / 500))]"
+"dead fast" 1.0 0 -8053223 true "" "plot count individus with [not alive? and (speed > (Human-speed / 500))]"
 
 @#$#@#$#@
 ## WHAT IS IT?
