@@ -7,6 +7,7 @@ globals
   escaped
   escaped-slow
   escaped-fast
+  danger-spread
 ]
 individus-own
 [
@@ -25,6 +26,7 @@ patches-own [
 ]
 
 to init-simulation
+  set danger-spread 50
   set escaped 0
   __clear-all-and-reset-ticks
   initialisation-patches
@@ -43,14 +45,15 @@ to init-simulation
      set shape "ghost"
     ]
   ]
-  ask individus [
-    setxy (random max-pxcor) * 2 - max-pxcor (random max-pycor) * 2 - max-pycor
-    if [pcolor] of patch-here = white [die]
-  ]
+  ;ask n-of nb-individus patches with [pcolor != white and not any? other turtles-here][sprout 1]
+  ;ask individus [
+  ;  setxy (random max-pxcor) * 2 - max-pxcor (random max-pycor) * 2 - max-pycor
+  ;  if [pcolor] of patch-here = white [die]
+  ;]
 
   create-fires 1
   [
-    setxy -20 -20
+    setxy -30 -30
     set color blue
     set shape "square"
     set time-alive 0
@@ -59,7 +62,7 @@ to init-simulation
 end
 
 to initialisation-patches
-  import-pcolors "images/city.png"
+  import-pcolors "images/Ranged-Exit.png"
   set green_ [pcolor] of patch 40 40
   ask patches [
     ifelse pcolor = white
@@ -173,7 +176,7 @@ to move
     [ set heading towards patch-at 1 0]
   ]
 
-  let ahead individus-on patch-ahead 1
+  let ahead individus-on patch-here
   ifelse not any? ahead
   [ fd speed ]
   [
@@ -216,15 +219,15 @@ ticks
 30.0
 
 SLIDER
--1
-80
-171
-113
+22
+127
+194
+160
 nb-individus
 nb-individus
 0
-500
-500.0
+1000
+350.0
 1
 1
 NIL
@@ -269,7 +272,7 @@ PLOT
 10
 1450
 335
-Evolution de l'epidemie
+Survie
 NIL
 NIL
 0.0
@@ -285,13 +288,13 @@ PENS
 
 SLIDER
 23
-230
+196
 195
-263
+229
 Human-speed
 Human-speed
 0
-10
+20
 10.0
 1
 1
@@ -310,58 +313,43 @@ Speed\n
 
 SLIDER
 23
-194
+250
 195
-227
-danger-spread
-danger-spread
-1
-100
-50.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-21
-310
-193
-343
+283
 Individus-sight
 Individus-sight
 1
 30
-20.0
+30.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-21
-359
-193
-392
+24
+303
+196
+336
 Congestion
 Congestion
 1
-10
-3.0
-1
+2
+1.1
+0.1
 1
 NIL
 HORIZONTAL
 
 CHOOSER
-30
-446
-168
-491
+22
+356
+160
+401
 Strategy
 Strategy
 "Polite" "Individualist" "Normal"
-2
+1
 
 TEXTBOX
 870
@@ -378,7 +366,7 @@ PLOT
 336
 1451
 627
-survie en fonction de la vitesse
+Survie en fonction de la vitesse
 NIL
 NIL
 0.0
