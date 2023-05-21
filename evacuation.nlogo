@@ -225,8 +225,8 @@ SLIDER
 nb-individus
 nb-individus
 0
-1000
-497.0
+500
+250.0
 1
 1
 NIL
@@ -319,7 +319,7 @@ Individus-sight
 Individus-sight
 1
 30
-30.0
+15.0
 1
 1
 NIL
@@ -334,7 +334,7 @@ Congestion
 Congestion
 1
 2
-1.1
+1.5
 0.1
 1
 NIL
@@ -348,7 +348,7 @@ CHOOSER
 Strategy
 Strategy
 "Polite" "Individualist" "Normal"
-0
+2
 
 TEXTBOX
 870
@@ -381,16 +381,15 @@ PENS
 "dead slow" 1.0 0 -1604481 true "" "plot count individus with [not alive? and (speed < (Human-speed / 500))]"
 "dead fast" 1.0 0 -8053223 true "" "plot count individus with [not alive? and (speed > (Human-speed / 500))]"
 
-INPUTBOX
-561
-602
-806
-662
+CHOOSER
+22
+422
+160
+467
 map-selection
-hard
+map-selection
+"easy" "normal" "hard"
 1
-0
-String
 
 @#$#@#$#@
 ## WHAT IS IT?
