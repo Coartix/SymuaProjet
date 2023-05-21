@@ -10,6 +10,7 @@ globals
 ]
 individus-own
 [
+  slow?
   alive?
   nb-infected
   speed
@@ -28,20 +29,25 @@ to init-simulation
   set escaped 0
   __clear-all-and-reset-ticks
   initialisation-patches
-  create-individus nb-individus
+  create-individus nb-individus / 2 ; fast
   [
     move-to one-of patches with [accessible?]
     set color orange
     set alive? true
-    set speed (random Human-speed / 500) + Human-speed / 1000
+    set speed (random Human-speed / 1000) + Human-speed / 500
 
-        ifelse speed > Human-speed / 500
-    [
-      set shape "person"
-    ]
-    [
-     set shape "ghost"
-    ]
+    set shape "person"
+    set slow? false
+  ]
+  create-individus nb-individus / 2 ; slow
+  [
+    move-to one-of patches with [accessible?]
+    set color orange
+    set alive? true
+    set speed (random Human-speed / 1000) + Human-speed / 1000
+
+    set shape "ghost"
+    set slow? true
   ]
   ;ask n-of nb-individus patches with [pcolor != white and not any? other turtles-here][sprout 1]
   ;ask individus [
@@ -79,7 +85,19 @@ end
 
 to go
   ; A vous de jouer !
-  if not any? individus with [alive?] [stop]
+  if not any? individus with [alive?]
+  [
+    print word "escaped : " escaped
+    print word "escaped slow : " escaped-slow
+    print word "escaped fast : " escaped-fast
+
+    print word "dead : " (nb-individus - escaped)
+    print word "dead slow : " (nb-individus / 2 - escaped-slow)
+    print word "dead fast : " (nb-individus / 2 - escaped-fast)
+
+    print word "ticks : " ticks
+    stop
+  ]
   ask individus
     [
       if alive?
@@ -134,7 +152,7 @@ to move
   if pcolor = green_
   [
     set escaped escaped + 1
-    ifelse speed > Human-speed / 500 [ set escaped-fast escaped-fast + 1 ]
+    ifelse not slow? [ set escaped-fast escaped-fast + 1 ]
     [ set escaped-slow escaped-slow + 1 ]
     die
   ]
@@ -179,7 +197,7 @@ to move
   ifelse not any? ahead
   [ fd speed ]
   [
-    if Strategy = "Normal" [fd speed / Congestion]
+    if Strategy = "Panic" [fd speed / Congestion]
     if Strategy = "Polite" [fd [speed] of min-one-of individus-here [speed]]
     if Strategy = "Individualist" [
       if max-one-of individus-here [speed] = self[ fd speed ]
@@ -226,7 +244,7 @@ nb-individus
 nb-individus
 0
 500
-250.0
+100.0
 1
 1
 NIL
@@ -347,7 +365,7 @@ CHOOSER
 401
 Strategy
 Strategy
-"Polite" "Individualist" "Normal"
+"Polite" "Individualist" "Panic"
 2
 
 TEXTBOX
@@ -378,8 +396,8 @@ true
 PENS
 "escaped slow" 1.0 0 -8330359 true "" "plot escaped-slow"
 "escaped fast" 1.0 0 -13210332 true "" "plot escaped-fast"
-"dead slow" 1.0 0 -1604481 true "" "plot count individus with [not alive? and (speed < (Human-speed / 500))]"
-"dead fast" 1.0 0 -8053223 true "" "plot count individus with [not alive? and (speed > (Human-speed / 500))]"
+"dead slow" 1.0 0 -1604481 true "" "plot count individus with [not alive? and slow?]"
+"dead fast" 1.0 0 -8053223 true "" "plot count individus with [not alive? and not slow?]"
 
 CHOOSER
 22
@@ -388,8 +406,8 @@ CHOOSER
 467
 map-selection
 map-selection
-"easy" "normal" "hard"
-1
+"fields" "city" "narrow_exit"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
